@@ -1,3 +1,4 @@
+import os
 import uvicorn
 from fastapi import FastAPI, Query
 from fastapi.responses import HTMLResponse
@@ -65,7 +66,6 @@ HTML_CONTENT = """<!DOCTYPE html>
             overflow-y: scroll;
         }
 
-        /* Ambient Glow Backdrop */
         .ambient-bg {
             position: fixed; top: -20vh; left: 50%; transform: translateX(-50%);
             width: 100vw; height: 60vh;
@@ -73,7 +73,6 @@ HTML_CONTENT = """<!DOCTYPE html>
             pointer-events: none; z-index: 0; filter: blur(80px);
         }
 
-        /* TV Focus Support */
         :focus-visible, .tv-focused {
             outline: none !important;
             border-color: var(--accent-glow) !important;
@@ -81,7 +80,6 @@ HTML_CONTENT = """<!DOCTYPE html>
             transform: scale(1.03) !important;
         }
 
-        /* Header Navigation */
         header {
             position: sticky; top: 12px; z-index: 1000;
             margin: 0 auto; width: calc(100% - 32px); max-width: 1400px;
@@ -108,7 +106,6 @@ HTML_CONTENT = """<!DOCTYPE html>
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
 
-        /* Search Input */
         .search-box { position: relative; flex: 1; max-width: 500px; display: flex; align-items: center; }
         .search-input {
             width: 100%; padding: 12px 46px 12px 18px;
@@ -127,7 +124,6 @@ HTML_CONTENT = """<!DOCTYPE html>
         }
         .search-btn svg { width: 16px; height: 16px; fill: var(--text-secondary); }
 
-        /* Category Bar */
         .categories-wrapper {
             max-width: 1400px; margin: 20px auto 0; padding: 0 16px;
             display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none;
@@ -143,7 +139,6 @@ HTML_CONTENT = """<!DOCTYPE html>
             background: var(--text-primary); color: #000; border-color: var(--text-primary);
         }
 
-        /* Grid Layout */
         main { max-width: 1400px; margin: 0 auto; padding: 24px 16px 100px; }
         .video-grid {
             display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 22px;
@@ -184,7 +179,6 @@ HTML_CONTENT = """<!DOCTYPE html>
         }
         .meta { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
 
-        /* Modal Player */
         .modal-backdrop {
             position: fixed; inset: 0; background: rgba(0, 0, 0, 0.9);
             backdrop-filter: blur(20px); z-index: 2000;
@@ -219,7 +213,6 @@ HTML_CONTENT = """<!DOCTYPE html>
             color: #fff; width: 34px; height: 34px; border-radius: 50%; cursor: pointer;
         }
 
-        /* Spinner */
         .spinner-box { display: flex; justify-content: center; padding: 60px 0; grid-column: 1 / -1; }
         .spinner {
             width: 36px; height: 36px; border: 3px solid var(--border-glass);
@@ -305,7 +298,7 @@ HTML_CONTENT = """<!DOCTYPE html>
                 }
             } catch (err) {
                 console.error("Scraper Backend Error:", err);
-                videoGrid.innerHTML = `<div style="grid-column:1/-1; text-align:center; color:#ff2d55; padding:40px;">Backend connection error. Make sure app.py is running.</div>`;
+                videoGrid.innerHTML = `<div style="grid-column:1/-1; text-align:center; color:#ff2d55; padding:40px;">Backend connection error.</div>`;
             } finally {
                 spinnerBox.style.display = 'none';
             }
@@ -388,7 +381,6 @@ HTML_CONTENT = """<!DOCTYPE html>
             return str.replace(/'/g, "\\'").replace(/"/g, '&quot;');
         }
 
-        // Initial Load
         loadQuery('Trending 2026');
     </script>
 </body>
@@ -396,4 +388,6 @@ HTML_CONTENT = """<!DOCTYPE html>
 """
 
 if __name__ == "__main__":
-    uvicorn.run("app:app", host="0.0.0.0", port=8000, reload=True)
+    # Dynamically bind to Render's allocated port variable
+    port = int(os.environ.get("PORT", 8000))
+    uvicorn.run(app, host="0.0.0.0", port=port)
